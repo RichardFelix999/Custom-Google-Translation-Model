@@ -1,4 +1,4 @@
-# Magnolia AutoML - Ampliación de modelo de traducción de google 
+# Magnolia AutoML 
 
 Integración de Magnolia con el servicio AutoML Translation de Google para adaptar traducciones a contenidos propios (turismo, finanzas etc.)
 
