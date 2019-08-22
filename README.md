@@ -1,31 +1,32 @@
-# Magnolia AutoML 
+# magnolia-content-translation-ml
 
-Integración de Magnolia con el servicio AutoML Translation de Google para adaptar traducciones a contenidos propios (turismo, finanzas etc.)
+Usage of AutoML of Google to create a custom translation model from translations retrieved from a website in Magnolia CMS.  
+The aim is to obtain a translation model specific to the contents of the websites to predict accurated translations.  
 
+For a detailed explanation please visit [Using Google AutoML Translation with Magnolia CMS](https://medium.com/@joaquin.alfaro/using-google-automl-translation-with-magnolia-cms-540f6e1f0fa7)  
 ## Features
-Integración con el servicio [Google AutoML Translation](https://cloud.google.com/translate/automl/docs/ "AutoML") para generar modelo predictivo de traducción
+Integration with the service [Google AutoML Translation](https://cloud.google.com/translate/automl/docs/ "AutoML") to generate the translation model
 
-Generación de dataset a partir de la traducción de contenidos almacenados en Magnolia.
+Generation of a training dataset from translations in Magnolia.
 
-Integración con el servicio [Google Cloud Storage](https://cloud.google.com/storage/ "Google Cloud Storage") para almacenar datasets
-
-Comando magnolia para traducir texto empleando modelo de predicción específico
+Integration with the service [Google Cloud Storage](https://cloud.google.com/storage/ "Google Cloud Storage") to store the training datasets to be used to generate the model.
+ 
+Magnolia utility to translate contents with the translation model created from contents of websites in Magnolia.
 
 
 ## Usage
 
 ### Set up
-1- Crear proyecto en Google Cloud
+1- Create project in Google Cloud
 
 2- Activar y configurar el servicio AutoML Translation en el proyecto creado en el punto anterior. Seguir el manual de Google https://cloud.google.com/translate/automl/docs/before-you-begin
->No es obligatorio crear el bucket porque el módulo lo crea en caso de no existir
+Activate and setup the service AutoML Translation in the project. Use this manual from Google https://cloud.google.com/translate/automl/docs/before-you-begin  
+>It is not required to create the bucket because it is created automatically by Magnolia
 
-Como resultado, podremos acceder a la consola de AutoML y dispondremos del service account Key con las credenciales de acceso
-
-**UI de AutoML**
+**UI for AutoML**
 ![Consola AutoML](_dev/consola-automl.png)
 
-**Ejemplo de json de service account Key**
+**Example of json of service account Key**
 ~~~~
 {
   "type": "service_account",
@@ -41,38 +42,35 @@ Como resultado, podremos acceder a la consola de AutoML y dispondremos del servi
 }
 ~~~~
 
-3- El cliente de AutoML recupera las credenciales del json del service account. La ubicación del fichero se indica en la variable de entorno GOOGLE_APPLICATION_CREDENTIALS
-
+3- The client of AutoML used in Magnolia get credentials from the above json. The location of the json must be specified at the environment variable GOOGLE_APPLICATION_CREDENTIALS
 ~~~~
 export GOOGLE_APPLICATION_CREDENTIALS="${SECURE_PATH}/automl-translation.json"
 ~~~~
 
-> ¿Por qué no empleo Api Key o similar? el Api no dispone de Api key. Es posible obtener token por oauth pero es temporal y exige más control. 
-
-#### Comandos
-El úso del módulo está limitado a comandos que pueden ser asociados a acciones etc.
+#### Magnolia commands
+The module provides a set of commands to create the training dataset, train the model and predict translation.
 
 ##### translationml-importtraining  
-Objetivo: Importar dataset con la traducción de contenidos en magnolia.  
+Generate and import the training dataset based in translations of Magnolia.  
   
-Parámetros:
->workspace: workspace de los contenidos empleados para generar el dataset  
+Parameters:
+>workspace: magnolia workspace of contents to be used to generate the training dataset.  
 
->path: Path del nodo raíz de los contenidos para generar dataset  
+>path: Path of the root node of contents  
 
->lang_source: Idioma origen (opcional. Por defecto local fallback)  
+>lang_source: Source language (optional. Uses default language of Magnolia)  
 
->lang_target: Idioma destino
+>lang_target: Targe language.
 
->nodeType: Tipo de nodo de los contenidos a emplear para generar el dataset  
+>nodeType: Type of content whose translations will be used to generate the training dataset.  
 
->project_id: Identificador del proyecto Google  
+>project_id: Identifier of the project in Google  
 
->compute_region: Región de computación  
+>compute_region: Google cloud Region  
 
->dataset_name: Nombre del dataset (opcional. Por defecto "magnolia_" + site +_" + lang_source + "_" + lang_target)
+>dataset_name: Name of the training dataset that will be created (optional. By default the name will be "magnolia_" + site +_" + lang_source + "_" + lang_target)
 
-Ejemplo:  
+Example:  
 ~~~~
 // Get command instance
 cm = info.magnolia.commands.CommandsManager.getInstance()
@@ -88,19 +86,19 @@ command.setDataset_name('magnolia_en_de')
 command.execute(ctx)
 ~~~~
 
-**translationml-trainmodel**  
-Objetivo: Entreno y generación de modelo.  
+##### translationml-trainmodel  
+Launch the training of a prediction model based in the training set generated with the command *translationml-importtraining* 
   
-Parámetros:  
->project_id: Identificador del proyecto Google  
+Parameters:  
+>project_id: Identifier of the project in Google  
 
->compute_region: Región de computación  
+>compute_region: Google cloud Region  
 
->dataset_name: Nombre del dataset
+>dataset_name: Name of the training dataset
 
->model_name: Nombre del modelo (opcional. Por defecto dataset_name + "_" + "yyyyMMddHHmmss")
+>model_name: Name of the prediction model (option. By default dataset_name + "_" + "yyyyMMddHHmmss")
 
-Ejemplo:  
+Example:  
 ~~~~
 // Get command instance
 cm = info.magnolia.commands.CommandsManager.getInstance()
@@ -113,19 +111,17 @@ command.setDataset_name('magnolia_en_de')
 command.execute(ctx)
 ~~~~  
 
-**translationml-predicttranslation**  
-Objetivo: Entreno y generación de modelo.  
+##### translationml-predicttranslation
+Predicts a translation using the model created with command *translationml-trainmodel*. The translations will be more accurate because they are based in contents of the website.
   
-Parámetros:  
->project_id: Identificador del proyecto Google  
+Parameters:  
+>project_id: Identifier of the project in Google  
 
->compute_region: Región de computación  
+>compute_region: Google cloud Region  
 
->dataset_name: Nombre del dataset
+>model_display_name: Name of the prediction model (incompatible with the param model_id)
 
->model_display_name: Nombre del modelo de predicción (incompatible con model_id)
-
->model_id: Identificador del modelo de predicción (incompatible con model_id)
+>model_id: Identifier of the prediction model (incompatible with the param model_display_name)
 
 ~~~~
 // Get command instance
@@ -141,13 +137,8 @@ command.execute(ctx)
 println command.getTranslation()
 ~~~~
  
-#### Reflexión
->La integración con AutoML quizás debería ser un servicio independiente empleado por magnolia para trabajar con el API de AutomML   
-
-## Contribute to the Magnolia component ecosystem
-It's easy to create components for Magnolia and share them on github and npm. I invite you to do so and join the community. Let's stop wasting time by developing the same thing again and again, rather let's help each other out by sharing our work and create a rich library of components.
-
-Just add `magnolia-light-module` as a keyword to npm's package.json to make them easy to find and use on npm.
+#### Thoughts
+Probabley the integration with AutoML should be done in a service out of Magnolia.    
 
 ## License
 
