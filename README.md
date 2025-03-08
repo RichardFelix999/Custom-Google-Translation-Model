@@ -3,7 +3,6 @@
 Usage of AutoML of Google to create a custom translation model from translations retrieved from a website in Magnolia CMS.  
 The aim is to obtain a translation model specific to the contents of the websites to predict accurated translations.  
 
-For a detailed explanation please visit [Using Google AutoML Translation with Magnolia CMS](https://medium.com/@joaquin.alfaro/using-google-automl-translation-with-magnolia-cms-540f6e1f0fa7)  
 ## Features
 Integration with the service [Google AutoML Translation](https://cloud.google.com/translate/automl/docs/ "AutoML") to generate the translation model
 
@@ -144,8 +143,3 @@ Probabley the integration with AutoML should be done in a service out of Magnoli
 
 MIT
 
-## Contributors
-
-Formentor Studio, http://formentor-studio.com/
-
-Joaquín Alfaro, @Joaquin_Alfaro
