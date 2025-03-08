@@ -18,7 +18,7 @@ Magnolia utility to translate contents with the translation model created from c
 ### Set up
 1- Create project in Google Cloud
 
-2- Activar y configurar el servicio AutoML Translation en el proyecto creado en el punto anterior. Seguir el manual de Google https://cloud.google.com/translate/automl/docs/before-you-begin
+2- Activate and configure the AutoML Translation service in the project created in the previous step. Follow the Google manual https://cloud.google.com/translate/automl/docs/before-you-begin
 Activate and setup the service AutoML Translation in the project. Use this manual from Google https://cloud.google.com/translate/automl/docs/before-you-begin  
 >It is not required to create the bucket because it is created automatically by Magnolia
 
